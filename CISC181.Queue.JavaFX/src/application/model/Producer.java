@@ -70,6 +70,9 @@ public class Producer implements Runnable {
 					controller.IncrementLblProducerExceptions();
 				}
 				controller.UpdateProgress((double) queue.size() / 100);
+				controller.ShowTxtCapacity(Integer.toString(queue.remainingCapacity()));
+				controller.ShowTxtSize(Integer.toString(queue.size()));
+				
 			}
 		} catch (InterruptedException e) {
 			controller.IncrementLblProducerExceptions();

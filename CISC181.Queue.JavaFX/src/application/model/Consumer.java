@@ -43,8 +43,8 @@ public class Consumer implements Runnable {
 	public void run() {
 		try {
 			while (true) {
-				int i = Random.nextInt(iRandomInterval + 1);
-				Thread.sleep(i);
+				int i = Random.nextInt(100);
+				Thread.sleep(iRandomInterval);
 				int j = 0;
 				try {
 					switch (eBlockingMethod) {

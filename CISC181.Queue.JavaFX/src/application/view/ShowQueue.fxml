@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="497.0" prefWidth="988.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.ShowQueueController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="574.0" prefWidth="988.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.ShowQueueController">
    <top>
       <HBox alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="745.0" BorderPane.alignment="CENTER">
          <children>
@@ -19,23 +20,45 @@
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <ProgressBar fx:id="bpQueueSize" prefHeight="18.0" prefWidth="574.0" progress="0.0" />
-                        <HBox GridPane.rowIndex="1">
+                        <ProgressBar fx:id="bpQueueSize" prefHeight="18.0" prefWidth="521.0" progress="0.0" />
+                        <HBox prefHeight="45.0" prefWidth="210.0" spacing="10.0" GridPane.rowIndex="2">
                            <children>
-                              <Button id="btnStartStop" fx:id="btnStartStop" mnemonicParsing="false" onAction="#btnStartStop_Click" text="Start" />
-                              <Separator orientation="VERTICAL" prefHeight="200.0" />
-                              <Button fx:id="btnPauseResume" mnemonicParsing="false" onAction="#btnPauseResume_Click" text="Button" />
+                              <HBox prefHeight="30.0" prefWidth="313.0" spacing="10.0">
+                                 <children>
+                                    <Button id="btnStartStop" fx:id="btnStartProducer" mnemonicParsing="false" onAction="#btnStartStop_Click" text="Start Producer" />
+                                    <Button id="btnStartStop" fx:id="btnStartConsumer" mnemonicParsing="false" onAction="#btnStartStop_Click" text="Start Consumer" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="TOP_RIGHT" prefHeight="30.0" prefWidth="355.0" spacing="5.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="102.0" text="Size / Capacity:" />
+                                    <TextField fx:id="txtSize" editable="false" prefHeight="25.0" prefWidth="63.0" />
+                                    <TextField fx:id="txtCapacity" editable="false" prefHeight="25.0" prefWidth="106.0" />
+                                 </children>
+                              </HBox>
+                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="1">
+                           <children>
+                              <Label text="Select Queue Type: " />
+                              <ComboBox fx:id="cmbQueueType" prefHeight="23.0" prefWidth="204.0" />
                            </children>
                         </HBox>
-                        <ProgressIndicator fx:id="bpiQueueSize" progress="0.0" GridPane.columnIndex="1" />
                      </children>
                   </GridPane>
                </children>
             </HBox>
          </children>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
       </HBox>
    </top>
    <bottom>
@@ -74,18 +97,22 @@
                </children>
             </HBox>
          </children>
+         <padding>
+            <Insets bottom="10.0" />
+         </padding>
       </HBox>
    </bottom>
    <center>
       <Pane prefHeight="159.0" prefWidth="988.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox layoutX="193.0" prefHeight="72.0" prefWidth="442.0">
+            <HBox layoutX="193.0" prefHeight="72.0" prefWidth="590.0" spacing="10.0">
                <children>
-                  <TextArea fx:id="txtMessage" editable="false" prefHeight="72.0" prefWidth="352.0" />
+                  <TextArea fx:id="txtMessage" editable="false" prefHeight="72.0" prefWidth="447.0" />
                   <Button fx:id="btnClearText" mnemonicParsing="false" onAction="#btnClearText_Click" text="Clear Text" />
                </children>
             </HBox>
             <Pane fx:id="pneRight" layoutX="193.0" layoutY="72.0" prefHeight="219.0" prefWidth="545.0" />
+            <ProgressIndicator fx:id="bpiQueueSize" layoutX="723.0" layoutY="295.0" prefHeight="65.0" prefWidth="76.0" progress="0.0" />
          </children>
       </Pane>
    </center>

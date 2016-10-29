@@ -5,6 +5,8 @@ import java.util.ResourceBundle;
 
 import application.MainApp;
 import application.model.eBlockingMethod;
+import application.model.eQueueType;
+import application.model.eQueueUser;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -34,15 +36,21 @@ public class ShowQueueController implements Initializable {
 	private ProgressBar bpQueueSize;
 	@FXML
 	private Button btnClearText;
+
 	@FXML
-	private Button btnStartStop;
-	
+	private Button btnStartProducer;
 	@FXML
-	private Button btnPauseResume;
+	private Button btnStartConsumer;
+
+
 	@FXML
 	private ComboBox cmbConsumer;
 	@FXML
 	private ComboBox cmbProducer;
+
+	@FXML
+	private ComboBox cmbQueueType;
+
 	private application.MainApp MainApp;
 	@FXML
 	private Slider sdConsumer;
@@ -52,6 +60,12 @@ public class ShowQueueController implements Initializable {
 
 	@FXML
 	private TextArea txtMessage;
+
+	@FXML
+	private TextField txtSize;
+
+	@FXML
+	private TextField txtCapacity;
 
 	@FXML
 	private TextField txtProducerExceptions;
@@ -95,46 +109,61 @@ public class ShowQueueController implements Initializable {
 		cmbConsumer.getItems().add("POLL w/Time");
 		cmbConsumer.getSelectionModel().select("TAKE");
 
+		cmbQueueType.getItems().add("PriorityBlockingQueue");
+		cmbQueueType.getItems().add("ArrayBlockingQueue");
+		cmbQueueType.getSelectionModel().select("ArrayBlockingQueue");
+
 		pneRight.getChildren().add(createChart());
-		
-		
-		btnPauseResume.setText("Pause");
+
+	}
+
+	public void ShowTxtSize(String strSize) {
+
+		Platform.runLater(() -> {
+			try {
+				this.txtSize.setText(strSize);
+			} catch (Exception ex) {
+				System.out.println("Exception in update progress");
+			}
+		});
+	}
+
+	public void ShowTxtCapacity(String strCapacity) {
+		Platform.runLater(() -> {
+			try {
+				this.txtCapacity.setText(strCapacity);
+			} catch (Exception ex) {
+				System.out.println("Exception in update progress");
+			}
+		});
+
 	}
 
 	protected LineChart<Number, Number> createChart() {
 
 		final NumberAxis xAxis = new NumberAxis();
-
-		//final NumberAxis yAxis = new NumberAxis();
 		NumberAxis yAxis = new NumberAxis("Y-Axis", 0d, 100d, 20);
-
 		final LineChart<Number, Number> lc = new LineChart<Number, Number>(xAxis, yAxis);
 
 		// setup chart
-
 		lc.setTitle("Basic LineChart");
-
 		xAxis.setLabel("X Axis");
-
 		yAxis.setLabel("Y Axis");
 
 		// add starting data
-
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-
 		series.setName("Data Series 1");
 
 		lc.getData().add(series);
 		lc.setMaxSize(500, 200);
 		return lc;
-
 	}
 
 	@FXML
 	public final void btnClearText_Click(ActionEvent event) {
 		Button btn = (Button) event.getSource();
 		txtMessage.clear();
-		
+
 		Platform.runLater(() -> {
 			try {
 				LineChart lc = (LineChart) pneRight.getChildren().get(0);
@@ -145,36 +174,40 @@ public class ShowQueueController implements Initializable {
 		});
 
 	}
-	
-	@FXML
-	public final void btnPauseResume_Click(ActionEvent event) {
-		
-		Button btn = (Button) event.getSource();
-		
-		if (btn.getText().contentEquals("Pause")) {
-			btnPauseResume.setText("Resume");
-			MainApp.PauseResume(0);
-		} else {
-			btnPauseResume.setText("Pause");
-			MainApp.PauseResume(1000);
-		}
-	}
-	
+
+
+
 	@FXML
 	public final void btnStartStop_Click(ActionEvent event) {
 		Button btn = (Button) event.getSource();
 
+		eQueueType bMethod = eQueueType.get(cmbQueueType.getSelectionModel().getSelectedItem().toString());
 		eBlockingMethod Pmethod = eBlockingMethod.get(cmbProducer.getSelectionModel().getSelectedItem().toString());
 		eBlockingMethod Cmethod = eBlockingMethod.get(cmbConsumer.getSelectionModel().getSelectedItem().toString());
 
-		if (btn.getText().contentEquals("Start")) {
-			MainApp.LaunchRace(this, (int) sdProducer.getValue(), (int) sdConsumer.getValue(), Pmethod, Cmethod);
-			btnStartStop.setText("Stop");
-		} else {
+		if (btn.getText().contentEquals("Start Producer")) {
+			MainApp.Launch(eQueueUser.PRODUCER, this, (int) sdProducer.getValue(), (int) sdConsumer.getValue(), Pmethod,
+					Cmethod, bMethod);
+			cmbQueueType.setDisable(true);
+			btn.setText("Stop Producer");
+		} else if (btn.getText().contentEquals("Start Consumer")) {
+			MainApp.Launch(eQueueUser.CONSUMER, this, (int) sdProducer.getValue(), (int) sdConsumer.getValue(), Pmethod,
+					Cmethod, bMethod);
+			cmbQueueType.setDisable(true);
+			btn.setText("Stop Consumer");
+		} else if (btn.getText().contentEquals("Stop Producer")) {
+			btn.setText("Start Producer");
+			MainApp.KillThread(eQueueUser.PRODUCER);
+		} 
+		else if (btn.getText().contentEquals("Stop Consumer")) {
+			btn.setText("Start Consumer");
+			MainApp.KillThread(eQueueUser.CONSUMER);
+		} 		
+		else if (btn.getText().contentEquals("Stop")) {
 			MainApp.KillRace();
-			btnStartStop.setText("Start");
+			btnStartProducer.setText("Start");
+			cmbQueueType.setDisable(false);
 		}
-
 	}
 
 	@FXML
@@ -205,10 +238,7 @@ public class ShowQueueController implements Initializable {
 	public void setTxtMessage(String strMessage) {
 		try {
 			this.txtMessage.setText(this.txtMessage.getText() + "\n" + strMessage);
-		}
-
-		catch (Exception e) {
-
+		} catch (Exception e) {
 		}
 	}
 
@@ -216,7 +246,6 @@ public class ShowQueueController implements Initializable {
 		try {
 			this.txtMessage.setText(strMessage);
 		} catch (Exception e) {
-
 		}
 
 	}
@@ -261,7 +290,6 @@ public class ShowQueueController implements Initializable {
 
 	public final void PaintChart(int iValue) {
 
-		
 		iXAxisValue++;
 
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
